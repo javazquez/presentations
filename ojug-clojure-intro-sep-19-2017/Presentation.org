@@ -1,0 +1,444 @@
+#+Title: Clojure
+#+Author: Juan Vazquez
+#+Email: juanvazquez@gmail.com
+
+#+options: num:nil
+#+OPTIONS: toc:nil
+#+REVEAL_THEME: night
+#+REVEAL_TRANS: linear
+#+REVEAL_PLUGINS: (highlight)
+
+
+* Clojure
+- Lisp
+- Homoiconicity 
+** LISP
+ "Lisp is the second-oldest high-level programming language in widespread use today. Only Fortran is older, by one year" - wikipedia
+- Common Lisp
+- Emacs Lisp
+- Clojure
+
+
+** OMG perens
+ Clojure uses less parentheses the other Lisps
+#+ATTR_REVEAL: :frag roll-in
+*But more than Java :P*
+** Homoiconicity
+
+If a language is homoiconic, it means that the language text has the same structure as its abstract syntax tree (AST)
+(i.e. the AST and the syntax are isomorphic). This allows all code in the language to be accessed and transformed as data,
+ using the same representation.
+ This property is often summarized saying that the language treats "code as data". -- wikipedia
+
+#+BEGIN_SRC clojure -i
+(+ 1 2 3 4)
+
+#+END_SRC
+** REPL
+ Read, Evaluate, Print, Loop
+- [[http://www.tryclj.com/][Web Based Clojure REPL]]
+- [[https://himera.herokuapp.com/index.html][Web Based Clojurscript REPL]]
+* Editors
+ - Emacs
+ - Spacemacs
+ - IDEA
+** Emacs setup
+  - [[http://www.braveclojure.com/introduction/][Clojure for the Brave and True]]
+  - [[https://github.com/javazquez/emacs_config][javazquez emacs config based on "Clojure for the Brave and True"]]
+
+* Build Tool Options
+- [[https://leiningen.org/][Leiningen site]]
+- [[http://boot-clj.com/][Boot]]
+#+BEGIN_SRC
+brew install leiningen
+brew install boot-clj
+#+END_SRC
+
+
+* Syntax
+- Lists  ( _function-pos args*)
+- prefix notation
+- comments ;  but usually written ;;
+- code comments #_
+- Comma as whitespace
+- Rational numbers (/ 3 4)
+
+#+BEGIN_SRC clojure -i
+(defn factorial 
+"This is a docstring that should tell you how to use factorial"
+  [n]
+  (reduce * (range 1 (inc n) )))
+
+;; run below code in REPL
+ (factorial 4 )
+#+END_SRC
+
+
+** def 
+*def* and *def-* create a clojure Var
+- Var is not a variable
+- *def* defines top level *var*
+- never inside a function, use *let*
+#+BEGIN_SRC clojure -i
+  (def myvar [ 1 2 3 4 5])
+#+END_SRC
+
+** defn vs defn-
+- defn creates public functions
+- defn- creates private functions
+
+** Code is Data
+Code is written using data structures and expressions
+
+** Expressions
+- all code is made up of expressions
+- Lists are called Symbolic Expressions or S-expressions
+- 123
+- (if test :true :false)
+- (* 1 2 3 4)
+- if only conditional operator
+- S-exp
+
+** Forms
+valid s-exp is called a form
+
+- ( 1 2 3 4) is a list and is not a form.. Running in REPL will generate an error.
+ 1 is in function position and not callable
+- however (take 2 '(1 2 3 4)) will work
+
+** Keywords
+- evaluate to themeselves
+- prefixed with colon 
+- Are functions
+#+BEGIN_SRC clojure
+  (def my-map {:name "Juan", :lastname "Vazquez"})
+  :name
+  (:name my-map) ;; :name in function position, code evaluates to "Juan"
+#+END_SRC
+
+** Symbols
+- similar to keywords
+- evaluate to the named value in current scope
+- examples
+- +, *, -, 
+- function names, or local vars
+- macros 
+- special forms
+*** Special Forms
+- quote, sugar version is '
+- def
+- let
+   
+** State Management
+- var
+- agent
+- ref
+- atom
+
+  
+** Being Lazy
+*** Fizzbuzz Example
+A LAZY PROGRAMMER NEEDS AN EVEN LAZIER LANGUAGE
+#+BEGIN_SRC clojure -i
+
+(def fizzes (cycle '("" "" "fizz")))
+(def buzzes (cycle '("" "" "" "" "buzz")))
+
+(def fizz-buzz 
+  (map 
+    (fn [x y z]
+      (if (clojure.string/blank? (str x y))
+        z
+        (str x y)))
+     fizzes
+     buzzes
+     (iterate inc 1)))
+(take 50 fizz-buzz)
+#+END_SRC
+
+* [[http://clojure-doc.org/articles/language/interop.html][Java Interop]]
+- Inner class using $
+- Clojure functions implement *java.lang.Runnable* interface
+#+BEGIN_SRC clojure
+Math/PI
+(.toUpperCase "fred")
+(System/getProperty "java.vm.version")
+(import java.util.Date)
+(import java.util.Map$Entry)
+
+Map$Entry  ; ⇒ java.util.Map$Entry
+#+END_SRC
+
+
+* Functional Programming
+** Pure Functions 
+A single unique output for each unique input.
+This gives you referential transparency. 
+- f(x) = y
+
+
+** Immutability
+#+BEGIN_SRC clojure -i
+ (let [x [1 2 3] ]
+  (println (map #(* 2 %) x))
+  (println x));x did not change
+#+END_SRC
+
+** Map
+Map a function on collections
+#+BEGIN_SRC clojure -i 
+(def baddies [{:name "Gannon", :hearts 100 }
+              {:name "Bongo Bongo", :hearts 90} 
+              {:name "Majora", :hearts 50} 
+              {:name "Dark Link", :hearts 60}])
+;; Deal some damage to all the baddies at once
+
+(map (fn [villan ] 
+       (assoc 
+        villan 
+        :hearts 
+        (- (:hearts villan) 20 ))) 
+     baddies)
+
+>({:name "Gannon", :hearts 80} {:name "Bongo Bongo", :hearts 70} 
+  {:name "Majora", :hearts 30} {:name "Dark Link", :hearts 40})
+
+#+END_SRC
+Original value is not changed
+** Map Cont.
+Map can work across multiple collections up to the shortest collection
+#+BEGIN_SRC clojure -i 
+(map str [1 2 3] [4 5 6] [7 8 9 10])
+
+>("147" "258" "369") ;<--notice that 10 is not there
+#+END_SRC
+** Reduce
+#+BEGIN_SRC clojure -i 
+(reduce * [1 2 3 4])
+#+END_SRC
+
+** Filter
+#+BEGIN_SRC clojure -i
+(filter odd? [ 1 2 3 4 5 6 7 8 9 ])
+#+END_SRC
+
+** Map, Filter, Reduce
+#+BEGIN_SRC clojure -i
+(->> '(1 2 3 4 5)
+  (map inc ,,,) ;; (2 3 4 5 6)
+  (filter even? ,,,) ;; (2 4 6)
+  (reduce * ,,,)) ;; 48
+#+END_SRC
+
+** Map, Filter, Reduce Cont.
+#+BEGIN_SRC clojure -i 
+(defn multiples3and5? [candidate]
+  (->> [3 5]
+       (map #(rem candidate %1 ) ,,,)
+       (some zero? ,,,)))
+
+;; run in REPL
+(->> (range 3 1000)
+     (filter multiples3and5? ,,, )
+     (reduce + ,,,))
+#+END_SRC
+
+> 233168
+
+** Comprehension
+   [[https://clojuredocs.org/clojure.core/for][comprehension docs]]
+
+** Recursion
+- Happens in the tail position
+#+BEGIN_SRC clojure -i
+(defn sum-of-digits
+"Write a function with the following prototype that returns the sum of the digits of an integer.
+int sumOfDigits(int x);
+If x is 234, the function should return 2 + 3 + 4, that is, 9.
+If x is 12, the function should return 1 + 2, which is 3.
+If x is 39, the function should return 12.
+If x is negative, ignore the minus sign. For example, -12 and 12 both return 3."
+  [x]
+  (loop [x1 (str (Math/abs x) ) ;<-- parameter 1
+         acc 0]  ;<-- parameter 2
+    (if (empty? x1)
+      acc
+      (recur (apply str (rest x1)) ;<--argument 1
+             (+ acc  ;<--argument 2
+               (Integer/parseInt (str (first x1)))) ))))
+
+#+END_SRC
+
+** Higher Order Functions
+- juxt
+- partial
+- apply
+- comp
+- anonymous functions
+*** Juxt
+- Takes a set of functions and returns a fn that is the juxtaposition of those fns
+#+BEGIN_SRC clojure
+(map (juxt 
+       #(even? %) 
+       #(odd? %) 
+       identity) 
+     [1 2 3 4 5])
+> ([false true 1] [true false 2] [false true 3] [true false 4] [false true 5])
+#+END_SRC
+*** Partial
+- Takes a function f and fewer than the normal arguments to f, and
+  returns a function that takes a variable number of additional args
+#+BEGIN_SRC clojure
+(defn ten-xer [name productivity]
+  (println (str name " is " (* 10 productivity) " times better now")))
+
+(def juan (partial ten-xer "Juan"))
+>(juan 10)
+#+END_SRC
+*** apply 
+-Applies function f to the argument list formed by prepending intervening arguments to args
+#+BEGIN_SRC clojure
+(map #(apply str %) [[1 2 3][4 5 6][7 8 9]])
+> ("123" "456" "789")
+#+END_SRC
+*** comp
+Takes a set of functions and returns a function that is the composition
+of those fns.
+#+BEGIN_SRC clojure
+(def num-length (comp count str))
+> (num-length 12345)
+> 5
+#+END_SRC
+*** anonymous function 
+#+BEGIN_SRC clojure
+#(* % %) ; takes one argument
+#(* %1 %1) ; takes one argument
+#(+ %1 %2) ; takes 2 arguments
+(fn [x] (* x x)) ;same as the first two above
+#+END_SRC
+
+
+
+* Reader
+produces datastructures from text
+#+BEGIN_SRC clojure
+(read-string "(+ 1 2 3 4)")
+(pr-str ["Groovy", "Clojure", "Frege"])
+(read-string "[\"Groovy\", \"Clojure\", \"Frege\"]")
+ ;; add eval and you can implement your own repl
+#+END_SRC
+
+* Macros
+- macroexpand
+- Macroexpand-1
+** First Rule of Macro Club
+- Do not create a Macro
+- unless it cannot be done in a function
+#+BEGIN_SRC clojure
+(defmacro unless [pred a b]
+  `(if (not ~pred) ~a ~b))
+
+> (macroexpand '(unless 1 :true :false))
+
+#+END_SRC
+
+** Thread first macro  ->
+#+BEGIN_SRC clojure
+
+;;The non value '!' is critical for the dup removal since letters are
+;; counted twice if seperated by a vowel			
+(defn soundex-helper [word]	
+  (-> 
+  ;map datatype will act as filter
+    (apply str (map conversion-map (.toUpperCase word ) ))
+    (clojure.string/replace ,,,  #"(?i)([\d])\1+" "$1" );replace dups
+    (subs ,,, 1 );remove first
+    (clojure.string/replace ,,, "!" "" );pull out non value
+    (str ,,, "000");pad with trailing 0s 
+    (subs ,,, 0 3)))
+#+END_SRC
+
+** Thread last macro  ->>
+#+BEGIN_SRC clojure -i 
+(defn multiples3and5? [candidate]
+  (->> [3 5]
+       (map #(rem candidate %1 ) ,,,)
+       (some zero?) ,,, ))
+
+;; run in REPL
+(->> (range 3 1000)
+     (filter multiples3and5? ,,, )
+     (reduce + ,,,))
+
+#+END_SRC
+* Destructuring
+- list vs map
+- variadic
+
+** Destructure a vector and list 
+#+BEGIN_SRC clojure
+(def person-name (list "Juan" "Vazquez"))
+#_(def person-name [ "juan" "vazquez"])
+
+(let [ [fname lname] person-name]
+  (println fname)
+  (println lname)) 
+#+END_SRC
+
+** Destructure a map
+#+BEGIN_SRC clojure
+(def person {:fname "Juan" :lname "Vazquez"})
+(let [{:keys [fname lname]} person]
+  (println fname)
+  (println lname))
+#+END_SRC
+
+** Handle variadic
+#+BEGIN_SRC clojure 
+(defrecord Person [fname lname instrument])
+(def jaydn (Person. "Jaydn" "Vazquez" "Drums"))
+(def juan (Person. "Juan" "Vazquez" "Electric Guitar"))
+(def jackson (Person. "Jackson"  "Vazquez" "Ukulele"))
+(defn band [musician & group]
+  (let [group-instruments (interpose ", "  (map :instrument group)) ]
+    (println (:fname musician)
+             "'s band consists of the following instruments, "
+             (:instrument musician)
+             group-instruments ) ))
+>(band jaydn jackson juan)
+#+END_SRC
+
+* Isomorphic Webapp
+- Luminus
+#+BEGIN_SRC 
+lein new luminus guestbook +h2
+lein new luminus streaming-demo +cljs +http-kit +re-frame +h2
+#+END_SRC
+- lein test-refresh
+- window.re_frame.db.app_db.state <- check state within db
+** Spec
+- Clojure.spec
+- specs are a composition of predicates
+- specs for map keysets provide specification of required and optional key sets
+- test.check
+- Predicates - allowed values
+#+BEGIN_SRC clojure
+(s/conform even? 1000)
+#+END_SRC
+
+
+* Advanced Topics
+** Clojure.async
+** Core.logic
+
+* Questions?
+- Thank you
+
+
+
+
+
+
+
+
+

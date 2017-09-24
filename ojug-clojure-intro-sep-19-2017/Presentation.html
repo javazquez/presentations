@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Clojure</title>
+<meta name="author" content="(Juan Vazquez)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/css/theme/night.css" id="theme"/>
+
+<link rel="stylesheet" href="file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/lib/css/zenburn.css"/>
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Clojure</h1><h2 class="author">Juan Vazquez</h2><p class="date">Created: 2017-09-24 Sun 15:54</p>
+</section>
+
+
+<section>
+<section id="slide-org05fb2a5">
+<h2 id="org05fb2a5">Clojure</h2>
+<ul>
+<li>Lisp</li>
+<li>Homoiconicity</li>
+
+</ul>
+</section>
+<section id="slide-orge4ec597">
+<h3 id="orge4ec597">LISP</h3>
+<p>
+"Lisp is the second-oldest high-level programming language in widespread use today. Only Fortran is older, by one year" - wikipedia
+</p>
+<ul>
+<li>Common Lisp</li>
+<li>Emacs Lisp</li>
+<li>Clojure</li>
+
+</ul>
+
+
+</section>
+<section id="slide-org01d9bcc">
+<h3 id="org01d9bcc">OMG perens</h3>
+<p>
+Clojure uses less parentheses the other Lisps
+</p>
+<p class="fragment roll-in">
+<b>But more than Java :P</b>
+</p>
+</section>
+<section id="slide-org97d216c">
+<h3 id="org97d216c">Homoiconicity</h3>
+<p>
+If a language is homoiconic, it means that the language text has the same structure as its abstract syntax tree (AST)
+(i.e. the AST and the syntax are isomorphic). This allows all code in the language to be accessed and transformed as data,
+ using the same representation.
+ This property is often summarized saying that the language treats "code as data". &#x2013; wikipedia
+</p>
+
+<div class="org-src-container">
+
+<pre><code class="clojure" >(+ 1 2 3 4)
+
+</code></pre>
+</div>
+</section>
+<section id="slide-orgdd0f6c1">
+<h3 id="orgdd0f6c1">REPL</h3>
+<p>
+Read, Evaluate, Print, Loop
+</p>
+<ul>
+<li><a href="http://www.tryclj.com/">Web Based Clojure REPL</a></li>
+<li><a href="https://himera.herokuapp.com/index.html">Web Based Clojurscript REPL</a></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org52b4bc1">
+<h2 id="org52b4bc1">Editors</h2>
+<ul>
+<li>Emacs</li>
+<li>Spacemacs</li>
+<li>IDEA</li>
+
+</ul>
+</section>
+<section id="slide-org3820611">
+<h3 id="org3820611">Emacs setup</h3>
+<ul>
+<li><a href="http://www.braveclojure.com/introduction/">Clojure for the Brave and True</a></li>
+<li><a href="https://github.com/javazquez/emacs_config">javazquez emacs config based on "Clojure for the Brave and True"</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org4cb3200">
+<h2 id="org4cb3200">Build Tool Options</h2>
+<ul>
+<li><a href="https://leiningen.org/">Leiningen site</a></li>
+<li><a href="http://boot-clj.com/">Boot</a></li>
+
+</ul>
+<pre  class="example">
+brew install leiningen
+brew install boot-clj
+</pre>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgf934626">
+<h2 id="orgf934626">Syntax</h2>
+<ul>
+<li>Lists  ( _function-pos args*)</li>
+<li>prefix notation</li>
+<li>comments ;  but usually written ;;</li>
+<li>code comments #_</li>
+<li>Comma as whitespace</li>
+<li>Rational numbers (/ 3 4)</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defn factorial 
+"This is a docstring that should tell you how to use factorial"
+  [n]
+  (reduce * (range 1 (inc n) )))
+
+;; run below code in REPL
+ (factorial 4 )
+</code></pre>
+</div>
+
+
+</section>
+<section id="slide-orgc29b251">
+<h3 id="orgc29b251">def</h3>
+<p>
+<b>def</b> and <b>def-</b> create a clojure Var
+</p>
+<ul>
+<li>Var is not a variable</li>
+<li><b>def</b> defines top level <b>var</b></li>
+<li>never inside a function, use <b>let</b></li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >  (def myvar [ 1 2 3 4 5])
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgde1e1a9">
+<h3 id="orgde1e1a9">defn vs defn-</h3>
+<ul>
+<li>defn creates public functions</li>
+<li>defn- creates private functions</li>
+
+</ul>
+
+</section>
+<section id="slide-org91151f3">
+<h3 id="org91151f3">Code is Data</h3>
+<p>
+Code is written using data structures and expressions
+</p>
+
+</section>
+<section id="slide-orgf412233">
+<h3 id="orgf412233">Expressions</h3>
+<ul>
+<li>all code is made up of expressions</li>
+<li>Lists are called Symbolic Expressions or S-expressions</li>
+<li>123</li>
+<li>(if test :true :false)</li>
+<li>(* 1 2 3 4)</li>
+<li>if only conditional operator</li>
+<li>S-exp</li>
+
+</ul>
+
+</section>
+<section id="slide-org4ef3e16">
+<h3 id="org4ef3e16">Forms</h3>
+<p>
+valid s-exp is called a form
+</p>
+
+<ul>
+<li>( 1 2 3 4) is a list and is not a form.. Running in REPL will generate an error.
+1 is in function position and not callable</li>
+<li>however (take 2 '(1 2 3 4)) will work</li>
+
+</ul>
+
+</section>
+<section id="slide-org27c55c9">
+<h3 id="org27c55c9">Keywords</h3>
+<ul>
+<li>evaluate to themeselves</li>
+<li>prefixed with colon</li>
+<li>Are functions</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(def my-map {:name "Juan", :lastname "Vazquez"})
+:name
+(:name my-map) ;; :name in function position, code evaluates to "Juan"
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org6bde23f">
+<h3 id="org6bde23f">Symbols</h3>
+<ul>
+<li>similar to keywords</li>
+<li>evaluate to the named value in current scope</li>
+<li>examples</li>
+<li>+, *, -,</li>
+<li>function names, or local vars</li>
+<li>macros</li>
+<li>special forms</li>
+
+</ul>
+</section>
+<section id="slide-org7d83442">
+<h4 id="org7d83442">Special Forms</h4>
+<ul>
+<li>quote, sugar version is '</li>
+<li>def</li>
+<li>let</li>
+
+</ul>
+
+</section>
+<section id="slide-org75f38b6">
+<h3 id="org75f38b6">State Management</h3>
+<ul>
+<li>var</li>
+<li>agent</li>
+<li>ref</li>
+<li>atom</li>
+
+</ul>
+
+
+</section>
+<section id="slide-org62f5769">
+<h3 id="org62f5769">Being Lazy</h3>
+<div class="outline-text-3" id="text-org62f5769">
+</div>
+</section>
+<section id="slide-orgf896ffe">
+<h4 id="orgf896ffe">Fizzbuzz Example</h4>
+<p>
+A LAZY PROGRAMMER NEEDS AN EVEN LAZIER LANGUAGE
+</p>
+<div class="org-src-container">
+
+<pre><code class="clojure" >
+(def fizzes (cycle '("" "" "fizz")))
+(def buzzes (cycle '("" "" "" "" "buzz")))
+
+(def fizz-buzz 
+  (map 
+    (fn [x y z]
+      (if (clojure.string/blank? (str x y))
+        z
+        (str x y)))
+     fizzes
+     buzzes
+     (iterate inc 1)))
+(take 50 fizz-buzz)
+</code></pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org570befc">
+<h2 id="org570befc"><a href="http://clojure-doc.org/articles/language/interop.html">Java Interop</a></h2>
+<ul>
+<li>Inner class using $</li>
+<li>Clojure functions implement <b>java.lang.Runnable</b> interface</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >Math/PI
+(.toUpperCase "fred")
+(System/getProperty "java.vm.version")
+(import java.util.Date)
+(import java.util.Map$Entry)
+
+Map$Entry  ; ⇒ java.util.Map$Entry
+</code></pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgaea38e7">
+<h2 id="orgaea38e7">Functional Programming</h2>
+<div class="outline-text-2" id="text-orgaea38e7">
+</div>
+</section>
+<section id="slide-orgc816056">
+<h3 id="orgc816056">Pure Functions</h3>
+<p>
+A single unique output for each unique input.
+This gives you referential transparency. 
+</p>
+<ul>
+<li>f(x) = y</li>
+
+</ul>
+
+
+</section>
+<section id="slide-org626a814">
+<h3 id="org626a814">Immutability</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" > (let [x [1 2 3] ]
+  (println (map #(* 2 %) x))
+  (println x));x did not change
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org02a284e">
+<h3 id="org02a284e">Map</h3>
+<p>
+Map a function on collections
+</p>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(def baddies [{:name "Gannon", :hearts 100 }
+              {:name "Bongo Bongo", :hearts 90} 
+              {:name "Majora", :hearts 50} 
+              {:name "Dark Link", :hearts 60}])
+;; Deal some damage to all the baddies at once
+
+(map (fn [villan ] 
+       (assoc 
+        villan 
+        :hearts 
+        (- (:hearts villan) 20 ))) 
+     baddies)
+
+>({:name "Gannon", :hearts 80} {:name "Bongo Bongo", :hearts 70} 
+  {:name "Majora", :hearts 30} {:name "Dark Link", :hearts 40})
+
+</code></pre>
+</div>
+<p>
+Original value is not changed
+</p>
+</section>
+<section id="slide-org26cac7a">
+<h3 id="org26cac7a">Map Cont.</h3>
+<p>
+Map can work across multiple collections up to the shortest collection
+</p>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(map str [1 2 3] [4 5 6] [7 8 9 10])
+
+>("147" "258" "369") ;<--notice that 10 is not there
+</code></pre>
+</div>
+</section>
+<section id="slide-org9b24132">
+<h3 id="org9b24132">Reduce</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(reduce * [1 2 3 4])
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org578c1a6">
+<h3 id="org578c1a6">Filter</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(filter odd? [ 1 2 3 4 5 6 7 8 9 ])
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org6a2a299">
+<h3 id="org6a2a299">Map, Filter, Reduce</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(->> '(1 2 3 4 5)
+  (map inc ,,,) ;; (2 3 4 5 6)
+  (filter even? ,,,) ;; (2 4 6)
+  (reduce * ,,,)) ;; 48
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org25086d1">
+<h3 id="org25086d1">Map, Filter, Reduce Cont.</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defn multiples3and5? [candidate]
+  (->> [3 5]
+       (map #(rem candidate %1 ) ,,,)
+       (some zero? ,,,)))
+
+;; run in REPL
+(->> (range 3 1000)
+     (filter multiples3and5? ,,, )
+     (reduce + ,,,))
+</code></pre>
+</div>
+
+<p>
+&gt; 233168
+</p>
+
+</section>
+<section id="slide-org262d433">
+<h3 id="org262d433">Comprehension</h3>
+<p>
+<a href="https://clojuredocs.org/clojure.core/for">comprehension docs</a>
+</p>
+
+</section>
+<section id="slide-org4701af6">
+<h3 id="org4701af6">Recursion</h3>
+<ul>
+<li>Happens in the tail position</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defn sum-of-digits
+"Write a function with the following prototype that returns the sum of the digits of an integer.
+int sumOfDigits(int x);
+If x is 234, the function should return 2 + 3 + 4, that is, 9.
+If x is 12, the function should return 1 + 2, which is 3.
+If x is 39, the function should return 12.
+If x is negative, ignore the minus sign. For example, -12 and 12 both return 3."
+  [x]
+  (loop [x1 (str (Math/abs x) ) ;<-- parameter 1
+         acc 0]  ;<-- parameter 2
+    (if (empty? x1)
+      acc
+      (recur (apply str (rest x1)) ;<--argument 1
+             (+ acc  ;<--argument 2
+               (Integer/parseInt (str (first x1)))) ))))
+
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgcebbde6">
+<h3 id="orgcebbde6">Higher Order Functions</h3>
+<ul>
+<li>juxt</li>
+<li>partial</li>
+<li>apply</li>
+<li>comp</li>
+<li>anonymous functions</li>
+
+</ul>
+</section>
+<section id="slide-org2ed27dd">
+<h4 id="org2ed27dd">Juxt</h4>
+<ul>
+<li>Takes a set of functions and returns a fn that is the juxtaposition of those fns</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(map (juxt 
+       #(even? %) 
+       #(odd? %) 
+       identity) 
+     [1 2 3 4 5])
+> ([false true 1] [true false 2] [false true 3] [true false 4] [false true 5])
+</code></pre>
+</div>
+</section>
+<section id="slide-org92c8186">
+<h4 id="org92c8186">Partial</h4>
+<ul>
+<li>Takes a function f and fewer than the normal arguments to f, and
+returns a function that takes a variable number of additional args</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defn ten-xer [name productivity]
+  (println (str name " is " (* 10 productivity) " times better now")))
+
+(def juan (partial ten-xer "Juan"))
+>(juan 10)
+</code></pre>
+</div>
+</section>
+<section id="slide-org38f7cea">
+<h4 id="org38f7cea">apply</h4>
+<p>
+-Applies function f to the argument list formed by prepending intervening arguments to args
+</p>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(map #(apply str %) [[1 2 3][4 5 6][7 8 9]])
+> ("123" "456" "789")
+</code></pre>
+</div>
+</section>
+<section id="slide-org5340ef7">
+<h4 id="org5340ef7">comp</h4>
+<p>
+Takes a set of functions and returns a function that is the composition
+of those fns.
+</p>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(def num-length (comp count str))
+> (num-length 12345)
+> 5
+</code></pre>
+</div>
+</section>
+<section id="slide-orgef1cdb2">
+<h4 id="orgef1cdb2">anonymous function</h4>
+<div class="org-src-container">
+
+<pre><code class="clojure" >#(* % %) ; takes one argument
+#(* %1 %1) ; takes one argument
+#(+ %1 %2) ; takes 2 arguments
+(fn [x] (* x x)) ;same as the first two above
+</code></pre>
+</div>
+
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgad436ec">
+<h2 id="orgad436ec">Reader</h2>
+<p>
+produces datastructures from text
+</p>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(read-string "(+ 1 2 3 4)")
+(pr-str ["Groovy", "Clojure", "Frege"])
+(read-string "[\"Groovy\", \"Clojure\", \"Frege\"]")
+ ;; add eval and you can implement your own repl
+</code></pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgc505943">
+<h2 id="orgc505943">Macros</h2>
+<ul>
+<li>macroexpand</li>
+<li>Macroexpand-1</li>
+
+</ul>
+</section>
+<section id="slide-orgcb339b1">
+<h3 id="orgcb339b1">First Rule of Macro Club</h3>
+<ul>
+<li>Do not create a Macro</li>
+<li>unless it cannot be done in a function</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defmacro unless [pred a b]
+  `(if (not ~pred) ~a ~b))
+
+> (macroexpand '(unless 1 :true :false))
+
+</code></pre>
+</div>
+
+</section>
+<section id="slide-org153494f">
+<h3 id="org153494f">Thread first macro  -&gt;</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >
+;;The non value '!' is critical for the dup removal since letters are
+;; counted twice if seperated by a vowel			
+(defn soundex-helper [word]	
+  (-> 
+  ;map datatype will act as filter
+    (apply str (map conversion-map (.toUpperCase word ) ))
+    (clojure.string/replace ,,,  #"(?i)([\d])\1+" "$1" );replace dups
+    (subs ,,, 1 );remove first
+    (clojure.string/replace ,,, "!" "" );pull out non value
+    (str ,,, "000");pad with trailing 0s 
+    (subs ,,, 0 3)))
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgf1c2bfe">
+<h3 id="orgf1c2bfe">Thread last macro  -&gt;&gt;</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defn multiples3and5? [candidate]
+  (->> [3 5]
+       (map #(rem candidate %1 ) ,,,)
+       (some zero?) ,,, ))
+
+;; run in REPL
+(->> (range 3 1000)
+     (filter multiples3and5? ,,, )
+     (reduce + ,,,))
+
+</code></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-orgd0abab7">
+<h2 id="orgd0abab7">Destructuring</h2>
+<ul>
+<li>list vs map</li>
+<li>variadic</li>
+
+</ul>
+
+</section>
+<section id="slide-org2996018">
+<h3 id="org2996018">Destructure a vector and list</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(def person-name (list "Juan" "Vazquez"))
+#_(def person-name [ "juan" "vazquez"])
+
+(let [ [fname lname] person-name]
+  (println fname)
+  (println lname)) 
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orga9c8ff7">
+<h3 id="orga9c8ff7">Destructure a map</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(def person {:fname "Juan" :lname "Vazquez"})
+(let [{:keys [fname lname]} person]
+  (println fname)
+  (println lname))
+</code></pre>
+</div>
+
+</section>
+<section id="slide-orgd29c66e">
+<h3 id="orgd29c66e">Handle variadic</h3>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(defrecord Person [fname lname instrument])
+(def jaydn (Person. "Jaydn" "Vazquez" "Drums"))
+(def juan (Person. "Juan" "Vazquez" "Electric Guitar"))
+(def jackson (Person. "Jackson"  "Vazquez" "Ukulele"))
+(defn band [musician & group]
+  (let [group-instruments (interpose ", "  (map :instrument group)) ]
+    (println (:fname musician)
+             "'s band consists of the following instruments, "
+             (:instrument musician)
+             group-instruments ) ))
+>(band jaydn jackson juan)
+</code></pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org418d734">
+<h2 id="org418d734">Isomorphic Webapp</h2>
+<ul>
+<li>Luminus</li>
+
+</ul>
+<pre  class="example">
+lein new luminus guestbook +h2
+lein new luminus streaming-demo +cljs +http-kit +re-frame +h2
+</pre>
+<ul>
+<li>lein test-refresh</li>
+<li>window.re<sub>frame.db.app</sub><sub>db.state</sub> &lt;- check state within db</li>
+
+</ul>
+</section>
+<section id="slide-orgedf86b0">
+<h3 id="orgedf86b0">Spec</h3>
+<ul>
+<li>Clojure.spec</li>
+<li>specs are a composition of predicates</li>
+<li>specs for map keysets provide specification of required and optional key sets</li>
+<li>test.check</li>
+<li>Predicates - allowed values</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="clojure" >(s/conform even? 1000)
+</code></pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org5604427">
+<h2 id="org5604427">Advanced Topics</h2>
+<div class="outline-text-2" id="text-org5604427">
+</div>
+</section>
+<section id="slide-org14a96f9">
+<h3 id="org14a96f9">Clojure.async</h3>
+</section>
+<section id="slide-org71b86e2">
+<h3 id="org71b86e2">Core.logic</h3>
+
+</section>
+</section>
+<section>
+<section id="slide-orgfae67de">
+<h2 id="orgfae67de">Questions?</h2>
+<ul>
+<li>Thank you</li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/lib/js/head.min.js"></script>
+<script src="file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'file:///Users/req87389/.emacs.d/vendors/reveal.js-3.5.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }]
+});
+</script>
+</body>
+</html>
