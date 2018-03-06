@@ -1,0 +1,188 @@
+#+Title: Clojure
+#+Author: Juan Vazquez
+#+Email: juanvazquez@gmail.com
+
+
+#+REVEAL_THEME: night
+#+REVEAL_TRANS: linear
+#+REVEAL_PLUGINS: (highlight)
+#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+
+
+* Installation
+** use [[http://sdkman.io/][SDKMan]] to install any of the following
+- jdk
+- [[http://groovy-lang.org/][Apache Groovy]]
+- [[https://github.com/pledbrook/lazybones][Lazybones]]
+
+
+* Syntax
+- semicolons are optional unless you put mulitple statements on same line(Don't do this)
+- classes and methods default to public
+- getters and setters are generated unless you want to override them
+- check out [[http://docs.groovy-lang.org/2.4.9/html/gapi/groovy/transform/Canonical.html][AST transforms]] for slimming down your code
+
+#+BEGIN_SRC groovy
+import groovy.transform.ToString
+@ToString 
+class Dog {
+  String name = ''
+  String owner = ''
+  String bark(){'bark'}
+}
+
+def dog = new Dog(name: 'clifford', owner: 'little girl');
+
+// Result: Dog(clifford, little girl) rather than something like  Dog@58c0b289 if not overridden 
+#+END_SRC
+
+** Groovy Strings
+- Use java string version if there is no need for interpolation via $ or ${}
+#+BEGIN_SRC groovy
+'Regular java string'
+def gString = "Groovy String that can run code ${1 +3} " //Result: Groovy String that can run code 4 
+gString.class //Result: class org.codehaus.groovy.runtime.GStringImpl
+gString.toString().class //Result: class java.lang.String
+/slashystring/ // Slashy string helpful for regex
+
+'''Multi line 
+   java string '''
+
+""" Multi line groovy 
+    string is nice for 
+    Templates $gString"""
+#+END_SRC
+*** HTTP get request using a groovy string
+#+BEGIN_SRC groovy
+"https://www.google.com".toURL().text
+//Result: is the html code for google home page
+#+END_SRC
+** Regex
+#+BEGIN_SRC groovy
+"Hello World".findAll(/[a-z]+/) //Result: [ello, orld]
+#+END_SRC
+** Working with Collections 
+- Literal syntax for Map and List
+#+BEGIN_SRC groovy
+List myList = [1,2,3,] //trailing comma is not an issue in groovy
+Map guitarMap = [Gibson: 'Les Paul', Fender: 'Stratocaster', PRS: '509' ]
+#+END_SRC
+*** Lists
+    [[http://groovy-lang.org/groovy-dev-kit.html#Collections-Lists][Check out things you can do with lists]]
+*** Maps
+    [[http://groovy-lang.org/groovy-dev-kit.html#Collections-Maps][Check out things you can do with maps]]
+#+BEGIN_SRC groovy
+def emps = [
+[name: 'Scott', language: 'groovy', dept:'IT' , serviceYrs: 1  ],
+[name: 'Jim', language: 'perl', dept:'IT' , serviceYrs: 15 ],
+[name: 'Juan', language: 'clojure', dept:'IT', serviceYrs:1 ],
+[name: 'Angela', language: 'english', dept:'HR', serviceYrs: 16 ],
+[name: 'James', language: 'business', dept:'CEO', serviceYrs: 30 ]
+]
+//get all non it employees
+println emps.findAll{it.dept != 'IT'}.collect{it.name}
+//Result: [Angela, James]
+//add total years of service for IT dept via Groovy version of Map(collect), filter(findAll) and reduce(inject)
+println emps.findAll{ it.dept =='IT' }
+            .collect{ it.serviceYrs }
+            .inject{ acc, val -> acc + val }
+//Result: 17
+println emps.findAll{it.dept =='IT'}*.serviceYrs.sum() // '*.' is called spread-dot operator in this context and acts like collect
+//Result: 17
+#+END_SRC
+
+** FILE I/O
+#+BEGIN_SRC groovy
+//Groovy open file for writing
+def target ="filename"
+File wf= new File(target)
+wf.write( "I am in your file eating your space" )
+
+//Groovy one liner
+new File('filename.txt').text = 'First line of text!'
+
+//Groovy open file for appending
+def target ="filename"
+File af= new File(target)
+af.append("I have all of your base")
+
+//Groovy read each line in file
+new File("filename").eachLine{line -> println line}
+
+//Groovy read whole document and put into List
+
+List lines = new File("filename").readLines()
+//lines contains two lines that we need
+println "first line  $lines[0]"
+println "second line $lines[1]"
+
+//Groovy reading one line
+File rf= new File("filename") //open for reading
+//read first line, trim, assign to tmp
+rf.withReader { line -> tmp = line.readLine().trim()}
+
+//Groovy test if file exists
+File src = new File(srcFile)
+if (src.exists() ){ println "I exist"}
+else{ println "I don't exist"}
+
+#+END_SRC
+** Closures
+*** Basics
+#+BEGIN_SRC groovy
+ def myclosure1 = { println it}
+ def myclosure2 = { oneparam ->  println oneparam}
+ def myclosure3 = { String firstparam , secondparam ->  println "$firstparam ${secondparam}"} //can type params 
+
+//call a clojure
+myclosure1('Hi there')
+//Result: Hi there
+myclosure1.call('Hello there')
+//Result: Hello there
+
+(1..20).each{ println it}
+(1..20).each({ println it}) //syntax sugar makes having parentheses optional as seen in the line above
+
+#+END_SRC
+*** Caching Example
+#+BEGIN_SRC groovy
+def fib
+fib = { long n ->
+  n < 2 ? n : fib(n-1) + fib(n-2)
+}
+assert fib(35) == 9227465 // slow!
+
+//===============================
+
+fib2 = { long n ->
+	n < 2 ? n : fib2(n-1)+fib2(n-2)
+}.memoize()
+assert fib2(35) == 9227465 // fast!
+#+END_SRC
+** Ranges
+#+BEGIN_SRC groovy
+(1..10)
+(1..10).each{ println it}
+
+#+END_SRC
+
+* Functional Programming
+** Functions(Closures) as data
+#+BEGIN_SRC groovy
+Closure addClosure = { x, y -> x + y }
+Closure addThenDoubleClosure = { x, y, Closure operation -> operation(x, y) * 2 }
+assert addThenDoubleClosure(1, 3, addClosure) == 8
+#+END_SRC
+** Composing Functions(Closures) Higher order Functions (HOF)
+- Different from function as data example. That example tightly couples closures
+#+BEGIN_SRC groovy
+def plus2  = { it + 2 }
+def times3 = { it * 3 }
+def times3plus2 = plus2 << times3 //composing
+
+assert times3plus2(3) == 11
+#+END_SRC
+** FIND THE SUM OF ALL THE MULTIPLES OF 3 OR 5 BELOW 1000
+#+BEGIN_SRC groovy
+(3..<1000).findAll{ it % 3 == 0 || it % 5 == 0}.sum()
+#+END_SRC
