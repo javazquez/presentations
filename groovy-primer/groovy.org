@@ -1,4 +1,4 @@
-#+Title: Clojure
+#+Title: Intro to Groovy
 #+Author: Juan Vazquez
 #+Email: juanvazquez@gmail.com
 
