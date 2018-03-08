@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Functional Programming</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Functional Programming</h1>
+					<h4>Mutating the future one pure function at a time</h3>
+					<p>
+						<small><a target="_blank" href="http://javazquez.com/juan">Juan Vazquez</a> / <a target="_blank" href="https://twitter.com/javazquez">@javazquez</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Concepts</h2>
+					<ol>
+						<li>Few data structures, many transformations</li>
+						<li>Functions as data</li>
+						<li>Higher Order Functions(HOF)</li>
+
+					</ol>
+				</section>
+				<section>
+
+						<h2>What is a Pure Function?</h2>
+						A single unique output for each unique input. <br>
+						This gives you referential transparency. <br>
+						<ul>
+							<li>f(x) = y </li>
+							<li>f(x) = { z, y }</li>
+						</ul>
+
+
+
+
+				</section>
+				<section>
+					<section>
+						<h2>Functions as Data</h2>
+						<pre>
+							<code data-trim>
+								Closure addClosure = { x, y -> x + y }
+Closure addThenDoubleClosure = { x, y ,Closure operation -> operation(x, y) * 2 }
+assert addThenDoubleClosure(1,3) == 8
+						</code>
+					</pre>
+					</section>
+					<section>
+						<h2>Map, Reduce, Filter</h2>
+
+						<pre><code data-trim>
+(->> (map inc '(1 2 3 4 5))
+ (filter even?) ;;(2 4 6)
+ (reduce *)) ;;48
+						</code>
+
+						</pre>
+					</section>
+					<section>
+						<h5>Find the sum of all the multiples of <br>3 or 5 below 1000.</h4>
+						<pre>
+							<code>(defn multiples3and5 [canidate]
+  (or (zero? (rem canidate 5))
+      (zero? (rem canidate 3))))
+
+(->> (range 3 1000)
+     (filter multiples3and5 )
+     (reduce +))
+
+ //Groovy
+ (3..<1000).findAll{ it % 3 == 0 || it % 5 == 0}.sum()
+</code>
+						</pre>
+					</section>
+					<section>
+						<h2>More Transformations</h2>
+						<pre>
+							<code>def emps = [
+[name: 'Scott', language: 'groovy', dept:'IT' , serviceYrs: 1  ],
+[name: 'Jim', language: 'perl', dept:'IT' , serviceYrs: 15 ],
+[name: 'Juan', language: 'clojure', dept:'IT', serviceYrs:1 ],
+[name: 'Mark', language: 'english', dept:'HR', serviceYrs: 16 ],
+[name: 'Angela', language: 'business', dept:'CEO', serviceYrs: 30 ]
+]
+//get all non it employees
+println emps.findAll{it.dept != 'IT'}.collect{it.name}
+//add total years of service for IT dept
+
+println emps.findAll{ it.dept =='IT' }
+	.collect{ it.serviceYrs }
+        .inject{ acc, val -> acc + val }
+
+println emps.findAll{it.dept =='IT'}*.serviceYrs.sum()
+</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>HOF</h2>
+						<ul>
+							<li>Passing function to functions</li>
+							<li>Composition</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Java HOF example</h2>
+						<pre>
+							<code class='hljs' data-trim>import java.util.stream.Stream;
+
+public class Hof {
+  public static void main(String[] args) {
+    Stream.iterate(2L, n  ->  n  + 1)
+    .filter(Hof::isOdd)  // <------ HOF
+    .limit(5)
+    .forEach(System.out::println);
+  }
+  public static boolean isOdd(long number) {
+    if (number % 2 == 0) {
+      return false;
+    }
+    return true;
+  }
+}</code>
+						</pre>
+					</section>
+					<section>
+						Composing functions
+						<pre>
+							<code data-trim>
+								def plus2  = { it + 2 }
+def times3 = { it * 3 }
+def times3plus2 = plus2 << times3
+
+assert times3plus2(3) == 11</code>
+						</pre>
+						different from <a href="#/3">function as data example</a>. That example tightly couples closures
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Caching example</h2>
+						Referential transparency makes caching easy
+						<pre>
+							<code>def fib
+fib = { long n ->
+  n < 2 ? n : fib(n-1)+fib(n-2)
+}
+assert fib(35) == 9227465 // slow!
+
+//===============================
+
+fib2 = { long n ->
+	n < 2 ? n : fib2(n-1)+fib2(n-2)
+}.memoize()
+assert fib2(35) == 9227465 // fast!
+</code>
+						</pre>
+					</section>
+					<section>
+						<h2>parallelize for 90% off MSRP</h2>
+						<pre>
+							<code>import java.util.stream.Stream;
+
+public class ParallelExample {
+  public static void main(String[] args) {
+    Long answer = Stream.iterate(1L, n  ->  n  + 1)
+    .limit(100)
+    .parallel()  //<---- Just add this
+    .reduce(0L, Long::sum);
+
+    System.out.println(answer);
+  }
+}
+</code>
+						</pre>
+					</section>
+					<section>
+						<h2>A lazy programmer needs an even lazier language </h2>
+						<pre>
+							<code class='hljs' data-trim>
+								(def infinity (inc 1))
+(take 100 infinity)
+							</code>
+						</pre>
+						<pre>
+							<code data-trim>import java.util.stream.Stream;
+
+public class Infinite {
+  public static void main(String[] args) {
+    Stream.iterate(1L, n  ->  n  + 1)
+    .limit(100)  //<---- stopping here give you an IOU
+    .forEach(System.out::println); //<-- 'terminal' function
+  }
+}</code>
+						</pre>
+						1
+						2
+						3
+						...
+						100
+					</section>
+
+				</section>
+				<section>
+					<section>
+					  <h2>Java 8 </h2>
+						<ul>
+							<li>Functional Interfaces</li>
+							<li>Streams/Collections</li>
+							<li>Lambda's (use invoke Dynamic)</li>
+						</ul>
+					</section>
+					<section>
+						<h1>Functional Interfaces</h1>
+						<ul>
+							<li><a target="_blank" href="http://javarevisited.blogspot.com/2014/02/10-example-of-lambda-expressions-in-java8.html">Runnable</a></li>
+							<li>Callable</li>
+							<li><a href="http://www.mkyong.com/java8/java-8-lambda-comparator-example/" target="_blank">Comparable</a></li>
+							<li>Function</li>
+							<li>Predicate</li>
+							<li>Consumer</li>
+							<li>Supplier</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Gotcha</h2>
+						<ul>
+							<li>Strive for purity in Lamdas (get concurrency/parrallel) </li>
+						</ul>
+					</section>
+			</section>
+				<section>
+					<h2>Benefits</h2>
+					<ul>
+						<li>Pure functions are easier to reason about and test</li>
+						<li>Pure functions are easy to cache</li>
+						<li>Code is more declarative and easier to read</li>
+						<li>Data is consistant</li>
+						<li>Get concurrency 90% off MSRP</li>
+					</ul>
+				</section>
+
+				<!-- Example of nested vertical slides -->
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
