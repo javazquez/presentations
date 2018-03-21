@@ -8,8 +8,6 @@
 #+REVEAL_TRANS: linear
 #+REVEAL_PLUGINS: (highlight)
 
-
-* Clojure
 - Lisp
 - Homoiconicity 
 ** LISP
